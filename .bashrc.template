@@ -1,0 +1,17 @@
+#
+# Enable support of goenv in the prompt
+# just add this snippet to .bashrc file
+#
+
+function ps1_context {
+    # For any of these bits of context that exist, display them and append a space.
+    goenv=`basename "$GOENV"`
+    if [ "$goenv" != "" ]; then 
+        goenv="($goenv) "
+    fi 
+
+    for v in "$debian_chroot" "$goenv" "$PS1"; do
+        echo -n "${v:+$v}"
+    done
+}
+export PS1="$(ps1_context)"

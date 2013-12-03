@@ -1,0 +1,68 @@
+#!/bin/bash
+#
+# goenv is simple virtual enviroment manager for GOLANG
+# 
+# Create GO virtual enviroment
+#   type: goenv project1
+#       Create a project1 directory with 'bin', 'src' and 'pkg' subdirs and 
+#       activate it (set up GOPATH and update PATH variables)
+#
+# Activate GO virtual enviroment in the current directory or try to search virtual enviroment in the parent directory 
+#   type: goenv 
+# 
+# Activate GO virtual enviroment in the project1 directory or try to search virtual enviroment in the parent directory 
+#   type: goenv project1
+#      
+# Deactivate GO virtual enviroment
+#   type: exit
+#
+
+function make_goenv {
+  echo "Create [`basename "$1"`] environment"
+  mkdir -p "$1" "$1/bin" "$1/src" "$1/pkg"
+  if [ ! -f "$1/.goenv" ]; then
+    # create a 'marker' for virtual enviroment
+    # you can put anything inside 
+    echo -e "# go virtual environment\n# `basename $1`" > $1/.goenv
+  fi
+}
+
+function activate_goenv {
+  # user current directory if not args
+  [[ "$1" == "" ]] && cwd=`pwd -P` || cwd="$( cd $(dirname $1/.); pwd -P )"
+
+  # search recursively .goenv file
+  while [[ "$cwd" != "" && ! -e "$cwd/.goenv" ]]; do
+    cwd=${cwd%/*}
+  done
+
+  # No .goenv?
+  if [ "$cwd" == "" ]; then 
+    echo "Could not activate: no .goenv found." >&2
+    exit 1
+  fi
+
+  # We found virtual enviroment, export variable...
+  export GOENV=$cwd
+  export GOPATH="$GOENV"
+  export PATH="$GOPATH/bin:$PATH"
+  echo "Activate [`basename "$GOENV"`] environment"
+
+  # ... and execute shell
+  # If user passed any arguments then execute passed arguments within shell and exit
+  exec ${cmd_args:-$SHELL}
+}
+
+cmd=($@)
+cmd_len=${#cmd[@]}
+cmd_args="${cmd[@]:1:$cmd_len-1}"
+
+if [ "$1" == "" ]; then 
+  unset cmd_args
+  activate_goenv
+elif [ ! -d "$1" ]; then
+  make_goenv "$1"
+  activate_goenv "$1"
+else
+  activate_goenv "$1"
+fi
