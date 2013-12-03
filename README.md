@@ -1,5 +1,13 @@
 ## GoEnv - Simple virtual enviroment manager for Go lang
 
+### Installation
+Copy **goenv** script into ~/bin directory and make it executable
+```
+chmod u+x ~/bin/goenv
+```
+
+Add **.bashrc.template** snippet into **.bashrc** file
+
 #### Create Go virtual enviroment
 
 ```
@@ -9,7 +17,7 @@ Activate [project1] environment
 (project1) plar@devel:~/workspace$ _
 
 ```
-Create a *project1* directory with *bin*, *src* and *pkg* subdirectories and 
+Create a **project1** directory with **bin**, **src** and **pkg** subdirectories and 
 activate it (set GOPATH and update PATH shell variables)
 
 #### Deactivate Go virtual enviroment
